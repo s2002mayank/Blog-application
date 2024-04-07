@@ -1,0 +1,139 @@
+{#
+    The most powerful part of Jinja is template inheritance. 
+    Template inheritance allows you to build a base “skeleton” template,
+    that contains all the common elements of your site 
+    and defines {% blocks %} that child templates can override.
+    #}
+
+{#
+    ...
+#}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}base_template {% endblock %}</title>
+    <script src="https://kit.fontawesome.com/a47e08f4d6.js" crossorigin="anonymous"></script>
+    <style>        
+        footer{
+            background-color: #2C3E50;
+            text-align: center;
+            padding: 20px;
+        }                
+        .navbar{
+            list-style-type: none;
+            /* background-color: #077bff; */
+            background-color: #2C3E50;
+            /* background-color: #3498DB; */
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+        .navbar li{
+            float: left;            
+        }
+        .navbar a{
+            display: block;
+            padding: 14px 16px;
+            color: white;
+            text-decoration: none;            
+            text-align: center;            
+        }
+        .navbar li a:hover{            
+            background-color:rgb(39, 39, 123);            
+        }
+
+        .user-bar{
+        background-color: black;        
+        color: white;
+        padding: 7px;
+        display: flex;
+        justify-content:flex-end;
+        }        
+        .user-bar a{
+            text-decoration:underline;
+            color: white;                    
+        }
+            
+        form{
+            margin-top: 50px;
+            border: 3px solid black;
+            border-radius: 4px;
+            padding-top: 10px;
+            padding-left: 10px;
+            padding-bottom: 10px;
+        }
+
+        .flash_error{
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+            padding: 3px;
+        }
+
+        .flash_success{
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+            padding: 3px;            
+        }
+    </style>
+</head>
+<body>
+    <!-- nav-bar -->
+    <nav>
+        <ul class="navbar">
+            <li><a href="/home">Home</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="/logout">log-out</a></li>
+            {% else %}
+                <li><a href="/signup">Sign-up</a></li>
+                <li><a href="/login">log-in</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- User-bar -->
+    {% if user.is_authenticated %}
+        <div class="User-bar">
+            User: <a href="/posts/{{user.username}}">{{user.username}}</a>      <!-- {{user}} ->username -->                        
+        </div>
+    {% endif %}
+
+    <!-- flashed_messages configuration -->
+    {% with messages=get_flashed_messages(with_categories=True) %}
+        {% if messages %}         <!-- messages is a list -->
+            {% for category, message in messages %}
+                {% if category=='error' %}                                                
+                    <div class="flash_error">
+                        {{ message }}
+                    </div>
+                {% else %}                    
+                    <div class="flash_success">
+                        {{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- block content -->
+    <div>
+        {% block content %}<br>base_template_content<br>{% endblock %}
+    </div>
+
+    <!-- footer -->        
+        <footer>        
+            {% block footer%}    
+            <p>&copy;2024 Fast car inc.<p>
+            {% endblock %}
+        </footer>    
+    <script type="text/javascript" src="{{url_for('static', filename='index.js')}}"></script>
+</body>
+</html>
+
+
+

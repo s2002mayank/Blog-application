@@ -1,0 +1,42 @@
+<style>    
+    textarea{
+        width: 50%;
+        height: 100px;
+        padding: 5px;
+        box-sizing: border-box;
+        margin-bottom: 10px;        
+    }
+
+    button{
+        
+        padding: 5px 10px; /* padding-top/bottom and padding-left/right*/
+        background-color: #077bff;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+    }
+    /* name[type="???"] -> to specify additional styling in addition to name{...}*/
+    button[type='reset']{
+        margin-left: 10px;        
+        background-color: #dc3545;
+    }
+    button[type='submit']:hover{
+    background-color: #0056b3; /* Darken button background color on hover */
+    }
+    button[type='reset']:hover{        
+        background-color: red;
+    }
+</style>
+
+{% extends "base.html"%}
+{% block content %}
+<h1>Create a post!</h1>
+<div>
+    <form method='POST'>
+        <textarea name="text" placeholder="Enter your text here." required></textarea>
+        <br>
+        <button type="submit">Post-it</button>
+        <button type="reset">Clear</button>
+    </form> 
+</div>
+{% endblock %}

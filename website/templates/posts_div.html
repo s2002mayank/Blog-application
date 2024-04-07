@@ -1,0 +1,208 @@
+<style>
+    /* Card container */
+    .card {
+        background-color:  #ECF0F1; /* Background color */
+        border-radius: 8px; /* Rounded corners */
+        /*box-shadow: 0 4px 8px rgba(0, 0, 0, 0.9);/*  Shadow effect */
+        padding: 20px; /* Padding inside the card */
+        margin-bottom: 20px; /* Space between cards */
+    }
+
+    /* Card header */
+    .card-header {
+        border-bottom: 1px solid #000; /* Add a border below header */        
+        margin-bottom: 10px; /* Add space below header */
+        display: flex;        
+    }
+
+    button{
+        
+        color: white;
+        padding: 5px 10px;        
+        border: none;
+        border-radius: 4px;
+        margin-left: auto;
+        margin-bottom: 5px;
+        cursor: pointer;
+    }
+
+    /* Button styling */
+    .post_it_btn {
+        padding: 10px 20px; 
+        background-color: #dc3545; 
+        color: #fff;
+        border: none;
+        border-radius: 5px; 
+        cursor: pointer;
+        transition: background-color 0.3s; 
+    }
+
+    /* Hover effect */
+    .post_it_btn:hover {
+        background-color: #c82333; 
+    }
+
+    .comment-btn{
+        background-color: #077bff;                
+    }
+
+    .delete-button{        
+        /* background-color: #2ecc71; */
+        background-color: rgb(211, 44, 44);
+        color: #fff;
+        padding: 4px 8px;
+        border: none; 
+        border-radius: 5px; 
+        cursor: pointer;        
+    }
+
+    /* Card content */
+    .card-content {
+        color: #000; /* Text color */
+         line-height: 1.5; /* Line height for readability */
+        margin-bottom: 10px; /* Add space below content */
+    }    
+    
+    /* Card footer */
+    .card-footer {
+        border-top: 1px solid #000; /* Add a border above footer */
+        margin-top: 10px; /* Add space above footer */
+        color: black; /* Text color */
+    }
+
+    a, a:visited{
+        text-decoration:underline;
+        color: black;        
+    }
+
+    .comment-form{        
+        margin:auto;
+        margin-left: -10px;
+        border: none;                                
+    }
+
+    .toggle-checkbox{
+        display: none;
+    }
+
+    /* Style the label */
+    .toggle-label {
+        font-family:Arial, Helvetica, sans-serif;
+        cursor: pointer;
+        color: #077bff;
+        font-size: 16px;
+        font-weight: bold;
+        text-decoration: underline;
+        transition: color 0.3s;
+    }
+
+    /* Change label color on hover */
+    .toggle-label:hover {
+        color: #dc3545;
+    }
+
+
+    .comments-section{
+        display:none;
+        padding-top: 10px;
+    }
+
+    /* Show the comments section when the checkbox is checked */
+    .toggle-checkbox:checked ~ .comments-section{
+        display:block;
+    }
+
+    .comment{                               
+        margin-bottom: 10px;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        background-color: #f9f9f9;                
+    }    
+
+    .comment small{
+        font-style: italic;    
+        color: #777;                
+    }                   
+</style>
+
+{% extends "base.html" %}
+{% block title %} posts_div_base_template {% endblock %}
+
+{% block content %}
+
+<!-- posts -->
+<div id="posts">
+    {% for post in posts%}
+    <div class="card">
+        <div class="card-header">
+            <!-- implement it in backend --> 
+            posted by: <a href="/posts/{{post.user.username}}">{{post.user.username}}</a>            
+            {% if user.id== post.author %}
+                <!-- Implement it in backend -->
+                <button><a href="/delete-post/{{post.id}}">delete post</a></button>
+            {% endif %}
+        </div>
+        <div class="card-content">
+            {{post.text}}        
+            <br><br>
+            <small>Dated: {{post.date_created}}</small> 
+        </div>
+        <div class="card-footer">            
+            <form class="comment-form" method='POST' action="/create-comment/{{post.id}}">
+                <input type="text" id="text" name="text" placeholder="Enter text" required/>
+                <button class="comment-btn" type="submit">comment</button>                
+            </form>            
+            <div> 
+                <span id="likes-count-{{post.id}}">{{post.likes|length}}</span>
+
+                {# post.likes is assumed to be a list of like objects associated with the post.
+                   map(attribute='author_id') is used to extract the author_id attribute from each like object in the list.
+                   |list converts the result of the map filter back into a list.
+                   Finally, user.id in ... checks if the user's ID is in the list of author IDs extracted from the likes.
+                #}                           
+                {% if user.id in post.likes|map(attribute='author')|list %}                    
+                    <i class="fa-solid fa-thumbs-up fa-xl" id="like-button-{{post.id}}" onclick="likePost({{post.id}})"></i>
+                {% else %}
+                    <i class="fa-regular fa-thumbs-up fa-xl" id="like-button-{{post.id}}" onclick="likePost({{post.id}})"></i>
+                {% endif %}
+            </div>            
+            <div>                
+                <!-- The for attribute in the <button> tag should be set to the same value
+                as the id of the checkbox to create an association between the button and the checkbox.
+                With these corrections, clicking on the "Show Comments" button
+                will toggle the visibility of the comments section associated with the checkbox.
+                Ensure that you have corresponding CSS to style the button and
+                hide/show the comments section based on the checkbox state.                
+                -->
+
+                <label for="toggle-comments-{{post.id}}" class="toggle-label">show comments</label>                        
+                 <!-- id="toggle-comments-{{post.id}}" -->
+                 <!-- very important -->
+                <input type="checkbox" id="toggle-comments-{{post.id}}" class="toggle-checkbox"/>
+                <div class="comments-section">
+                    {% if post.comments|length>0 %}                    
+                        {% for comment in post.comments%}
+                        <div class="comment">
+                            <a href="/posts/{{comment.user.username}}">{{comment.user.username}}</a>: {{comment.text}}
+                            <small>{{comment.date_created}}</small>
+                            {% if comment.user.id==user.id %}
+                                <!-- implement it in backend --> 
+                                <a href="/delete-comment/{{comment.id}}"><button class="delete-button">delete</button></a>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        no comments to show
+                    {% endif %}
+
+                    {# What if no comments to show!!! Add IF statement {% if comments| length >0%} 
+                    #}
+                </div>
+            </div>                                 
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,44 @@
+{#     
+    The {% extends %} tag is the key here.
+     It tells the template engine that this template “extends” another template. 
+     When the template system evaluates this template, first it locates the parent. 
+    The extends tag must be the first tag in the template.
+
+    The {{ super() }} syntax is typically used in Jinja2 templates when
+    you are extending a base template and want to include
+    the content from the parent template within a block.   
+#}
+
+<style>
+    .p1{
+        border: 2px solid black;
+        border-radius: 4px;
+        padding-top: 5px;
+        padding-left: 4px;
+        padding-bottom: 2px;
+        margin-bottom: 2px;        
+    }                                
+</style>
+
+{% extends "posts_div.html"%}
+{% block title %}Homepage{% endblock %}
+
+{% block content%}
+
+<!-- Welcome page and Post It! redirect-->
+<h2>Welcome to Blog_Burg!</h2>
+<div>    
+<p class="p1">This is a blog web-app built in Flask web framework.</p>
+<h3>Hey {{user.username}}! <a href="/create-post" class="a_1"><button class="post_it_btn">Post-it!</button></a></h3>
+</div>
+
+<h2>Posts...</h2>
+
+<!-- Actual Content -->
+{{  super() }}
+
+{% endblock %}
+
+{% block footer %}   
+    {{super()}}    
+{% endblock %}

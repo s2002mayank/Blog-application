@@ -1,0 +1,17 @@
+{% extends "base.html"%}
+{% block title %}Sign-up{% endblock %}
+{% block content%}
+<h2>Welcome to Log-in page!</h2>
+<p>If you are not registered, Kindly <a href="/signup">Sign-up</a>!</p>
+<div >    
+    <form method="post" align="center">
+        <label name="username">Username: </label>
+        <input type="text" name="username" id="username" required>
+        <br><br>
+        <label name="password">Password: </label>
+        <input type="password" name="password" id="password" required>                
+        <br><br>
+        <button type="submit">log-in</button>
+    </form>
+</div>
+{% endblock %}
